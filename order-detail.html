@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chi tiết đơn đặt bàn – Nhà Hàng Hương Việt</title>
+  <link rel="stylesheet" href="order-detail.css">
+</head>
+<body>
+
+  <!-- ===== HEADER / BREADCRUMB ===== -->
+  <header class="od-header">
+    <div class="od-header-inner">
+      <div class="od-brand">
+        <span class="od-brand-icon">♨</span>
+        <span class="od-brand-name">Hương Việt <small>Admin</small></span>
+      </div>
+      <nav class="od-breadcrumb" aria-label="Breadcrumb">
+        <a href="admin.html" class="od-bc-link">Trang quản trị</a>
+        <span class="od-bc-sep">›</span>
+        <a href="admin.html#orders" class="od-bc-link" id="ordersBreadcrumbLink">Quản lý đặt bàn</a>
+        <span class="od-bc-sep">›</span>
+        <span class="od-bc-current" id="breadcrumbId">Chi tiết đơn</span>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="od-main">
+
+    <!-- Nút quay lại -->
+    <div class="od-topbar">
+      <button class="od-btn od-btn-outline" id="backBtn" onclick="goBackToAdmin()">
+        ← Quay lại danh sách
+      </button>
+      <h1 class="od-page-title" id="pageTitle">Chi tiết đơn đặt bàn</h1>
+    </div>
+
+    <!-- Trạng thái loading -->
+    <div id="loadingState" class="od-state-box">
+      <div class="od-spinner"></div>
+      <p>Đang tải thông tin đơn đặt bàn…</p>
+    </div>
+
+    <!-- Trạng thái lỗi (không tìm thấy đơn) -->
+    <div id="errorState" class="od-state-box od-state-error" hidden>
+      <div class="od-state-icon">⚠️</div>
+      <h2>Không tìm thấy đơn đặt bàn</h2>
+      <p>Mã đơn không tồn tại hoặc dữ liệu không hợp lệ.</p>
+      <a href="admin.html#orders" class="od-btn od-btn-primary" id="errorBackLink">← Về trang quản trị</a>
+    </div>
+
+    <!-- Nội dung chi tiết đơn -->
+    <div id="detailContent" hidden>
+
+      <!-- Thẻ thông tin tổng quan -->
+      <section class="od-card od-info-card">
+        <div class="od-card-header">
+          <span>📋 Thông tin đơn đặt bàn</span>
+          <span class="od-badge" id="statusBadge"></span>
+        </div>
+        <div class="od-card-body od-info-grid">
+          <div class="od-info-item">
+            <span class="od-info-label">Mã đơn</span>
+            <span class="od-info-value od-id-highlight" id="displayId"></span>
+          </div>
+          <div class="od-info-item">
+            <span class="od-info-label">Ngày đặt</span>
+            <span class="od-info-value" id="orderDate"></span>
+          </div>
+          <div class="od-info-item" id="rowTime" hidden>
+            <span class="od-info-label">Giờ đến</span>
+            <span class="od-info-value" id="orderTime"></span>
+          </div>
+          <div class="od-info-item" id="rowGuests" hidden>
+            <span class="od-info-label">Số khách</span>
+            <span class="od-info-value" id="orderGuests"></span>
+          </div>
+          <div class="od-info-item">
+            <span class="od-info-label">Phương thức thanh toán</span>
+            <span class="od-info-value" id="orderPayment"></span>
+          </div>
+          <div class="od-info-item od-full-col">
+            <span class="od-info-label">Ghi chú</span>
+            <span class="od-info-value" id="orderNote"></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Thẻ thông tin khách hàng -->
+      <section class="od-card">
+        <div class="od-card-header">👤 Thông tin khách hàng</div>
+        <div class="od-card-body od-info-grid">
+          <div class="od-info-item">
+            <span class="od-info-label">Họ và tên</span>
+            <span class="od-info-value" id="receiverName"></span>
+          </div>
+          <div class="od-info-item">
+            <span class="od-info-label">Số điện thoại</span>
+            <span class="od-info-value" id="receiverPhone"></span>
+          </div>
+          <div class="od-info-item od-full-col" id="rowAddress" hidden>
+            <span class="od-info-label">Địa chỉ</span>
+            <span class="od-info-value" id="receiverAddress"></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Bảng món ăn -->
+      <section class="od-card">
+        <div class="od-card-header">🍽 Danh sách món đã đặt</div>
+        <div class="od-card-body od-table-wrapper">
+          <table class="od-table" id="itemsTable">
+            <thead>
+              <tr>
+                <th>STT</th>
+                <th>Tên món</th>
+                <th class="od-text-right">Đơn giá</th>
+                <th class="od-text-center">Số lượng</th>
+                <th class="od-text-right">Thành tiền</th>
+              </tr>
+            </thead>
+            <tbody id="itemsTableBody"></tbody>
+            <tfoot>
+              <tr class="od-tfoot-row">
+                <td colspan="4" class="od-text-right"><strong>Tổng thanh toán:</strong></td>
+                <td class="od-text-right od-total-val" id="orderTotal"></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </section>
+
+      <!-- Cập nhật trạng thái -->
+      <section class="od-card" id="updateSection">
+        <div class="od-card-header">🔄 Cập nhật trạng thái đơn</div>
+        <div class="od-card-body od-update-row">
+          <label for="newStatusSelect" class="od-info-label">Chuyển sang trạng thái:</label>
+          <select id="newStatusSelect" class="od-select">
+            <option value="">-- Chọn trạng thái mới --</option>
+          </select>
+          <button class="od-btn od-btn-success" id="updateStatusBtn">✓ Cập nhật</button>
+          <p class="od-update-note" id="statusDoneNote" hidden>✅ Đơn này đã hoàn thành hoặc đã hủy, không thể cập nhật thêm.</p>
+        </div>
+      </section>
+
+      <!-- Nút hành động cuối trang -->
+      <div class="od-actions-bottom">
+        <button class="od-btn od-btn-outline" onclick="goBackToAdmin()">← Quay lại</button>
+      </div>
+
+    </div><!-- /#detailContent -->
+
+  </main>
+
+  <!-- ===== TOAST THÔNG BÁO ===== -->
+  <div id="odToast" class="od-toast" hidden></div>
+
+  <script src="order-detail.js"></script>
+</body>
+</html>
