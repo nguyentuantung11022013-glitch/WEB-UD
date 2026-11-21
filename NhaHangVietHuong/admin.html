@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin – Nhà Hàng Hương Việt</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body class="admin-body">
+
+  <!-- ===== TRANG ĐĂNG NHẬP ADMIN ===== -->
+  <div id="adminLoginPage" class="admin-login-page">
+    <div class="admin-login-box">
+      <div class="admin-login-logo">♨</div>
+      <h1>Quản trị viên</h1>
+      <p class="admin-login-sub">Nhà Hàng Hương Việt · Admin Panel</p>
+      <form id="adminLoginForm" class="admin-login-form" autocomplete="off">
+        <label>Tên đăng nhập
+          <input type="text" id="adminUser" placeholder="Nhập tên đăng nhập" autocomplete="username">
+        </label>
+        <label>Mật khẩu
+          <input type="password" id="adminPass" placeholder="Nhập mật khẩu" autocomplete="current-password">
+        </label>
+        <button type="submit" class="abtn abtn-primary">Đăng nhập</button>
+        <p id="adminLoginMsg" class="admin-msg-error" hidden></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== DASHBOARD ADMIN ===== -->
+  <div id="adminDashboard" class="admin-dashboard" hidden>
+
+    <!-- Sidebar -->
+    <aside class="admin-sidebar" id="adminSidebar">
+      <div class="sidebar-brand">
+        <span class="brand-icon">♨</span>
+        <span>Hương Việt<br><small>Admin</small></span>
+      </div>
+      <nav class="sidebar-nav">
+        <a class="sidebar-link active" data-section="dashboard" href="#">
+          <span class="sidebar-icon">▦</span> Tổng quan
+        </a>
+        <a class="sidebar-link" data-section="products" href="#">
+          <span class="sidebar-icon">🍽</span> Quản lý sản phẩm
+        </a>
+        <a class="sidebar-link" data-section="users" href="#">
+          <span class="sidebar-icon">👥</span> Quản lý người dùng
+        </a>
+        <a class="sidebar-link" data-section="orders" href="#">
+          <span class="sidebar-icon">📦</span> Quản lý đơn hàng
+        </a>
+        <a class="sidebar-link" data-section="stats" href="#">
+          <span class="sidebar-icon">📊</span> Thống kê
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="abtn abtn-logout" id="adminLogoutBtn">⏻ Đăng xuất</button>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <div class="admin-main">
+      <!-- Top bar -->
+      <header class="admin-topbar">
+        <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+        <h2 class="admin-page-title" id="adminPageTitle">Tổng quan</h2>
+        <div class="admin-topbar-right">
+          <span class="admin-topbar-user" id="adminTopbarUser">👤 admin</span>
+          <a href="index (1).html" class="abtn abtn-outline abtn-sm">← Trang chủ</a>
+        </div>
+      </header>
+
+      <!-- ===== SECTION: TỔNG QUAN ===== -->
+      <section class="admin-section active" id="section-dashboard">
+        <div class="stat-cards">
+          <div class="stat-card">
+            <div class="stat-icon">🍽</div>
+            <div class="stat-info">
+              <div class="stat-number" id="statTotalProducts">0</div>
+              <div class="stat-label">Tổng sản phẩm</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">👥</div>
+            <div class="stat-info">
+              <div class="stat-number" id="statTotalUsers">0</div>
+              <div class="stat-label">Người dùng</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">📦</div>
+            <div class="stat-info">
+              <div class="stat-number" id="statTotalOrders">0</div>
+              <div class="stat-label">Tổng đơn mang đi</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">💰</div>
+            <div class="stat-info">
+              <div class="stat-number" id="statTotalRevenue">0đ</div>
+              <div class="stat-label">Doanh thu</div>
+            </div>
+          </div>
+        </div>
+        <div class="dashboard-tables">
+          <div class="admin-card">
+            <div class="admin-card-header">📦 Đơn mang đi gần đây</div>
+            <table class="admin-table" id="dashRecentOrders">
+              <thead><tr><th>Mã đơn</th><th>Khách hàng</th><th>Tổng tiền</th><th>Trạng thái</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== SECTION: SẢN PHẨM ===== -->
+      <section class="admin-section" id="section-products">
+        <!-- Tiêu đề + nút Thêm sản phẩm nằm cùng hàng -->
+        <div class="section-header-row">
+          <h3 class="section-title">Quản lý sản phẩm</h3>
+          <button class="abtn abtn-primary" id="addProductBtn">+ Thêm sản phẩm</button>
+        </div>
+        <!-- Thanh lọc đa điều kiện -->
+        <div class="filter-bar">
+          <input type="text" id="productSearch" class="filter-input filter-input--wide" placeholder="Nhập tên món ăn...">
+          <select id="productCatFilter" class="filter-select">
+            <option value="all">Tất cả phân loại</option>
+            <option value="mon-chinh">Món chính</option>
+            <option value="khai-vi">Khai vị</option>
+            <option value="hai-san">Hải sản</option>
+            <option value="trang-mieng">Tráng miệng</option>
+            <option value="thuc-uong">Thức uống</option>
+          </select>
+          <select id="productStatusFilter" class="filter-select">
+            <option value="all">Tất cả trạng thái</option>
+            <option value="visible">Hiển thị</option>
+            <option value="hidden">Đang ẩn</option>
+          </select>
+          <select id="productPriceSort" class="filter-select">
+            <option value="default">Giá mặc định</option>
+            <option value="asc">Giá tăng dần</option>
+            <option value="desc">Giá giảm dần</option>
+          </select>
+          <div class="filter-actions">
+            <button class="abtn abtn-filter" id="applyProductFilter">Lọc</button>
+            <button class="abtn abtn-reset" id="resetProductFilter">Đặt lại</button>
+          </div>
+        </div>
+        <div class="admin-card">
+          <table class="admin-table" id="productTable">
+            <thead>
+              <tr>
+                <th>Hình ảnh</th>
+                <th>Tên món</th>
+                <th>Phân loại</th>
+                <th>Giá</th>
+                <th>Đang bán</th>
+                <th>Hiển thị</th>
+                <th>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody id="productTableBody"></tbody>
+          </table>
+          <div class="admin-pagination" id="productPagination" aria-label="Phân trang sản phẩm"></div>
+        </div>
+      </section>
+
+      <!-- ===== SECTION: NGƯỜI DÙNG ===== -->
+      <section class="admin-section" id="section-users">
+        <!-- Tiêu đề + nút Thêm người dùng nằm cùng hàng -->
+        <div class="section-header-row">
+          <h3 class="section-title">Quản lý người dùng</h3>
+          <button class="abtn abtn-primary" id="addUserBtn">+ Thêm người dùng</button>
+        </div>
+        <!-- Thanh lọc đa điều kiện -->
+        <div class="filter-bar">
+          <input type="text" id="userSearchName" class="filter-input filter-input--wide" placeholder="Tìm theo Tên hoặc Email...">
+          <input type="text" id="userSearchPhone" class="filter-input" placeholder="Tìm theo SĐT...">
+          <select id="userStatusFilter" class="filter-select">
+            <option value="all">Tất cả trạng thái</option>
+            <option value="active">Hoạt động</option>
+            <option value="locked">Bị khoá</option>
+          </select>
+          <div class="filter-actions">
+            <button class="abtn abtn-filter" id="applyUserFilter">Tìm kiếm</button>
+            <button class="abtn abtn-reset" id="resetUserFilter">Đặt lại</button>
+          </div>
+        </div>
+        <div class="admin-card">
+          <div class="admin-table-scroll">
+            <table class="admin-table" id="userTable">
+              <thead>
+                <tr>
+                  <th>STT</th>
+                  <th>Họ tên</th>
+                  <th>Email</th>
+                  <th>Số điện thoại</th>
+                  <th>Địa chỉ</th>
+                  <th>Trạng thái</th>
+                  <th>Thao tác</th>
+                </tr>
+              </thead>
+              <tbody id="userTableBody"></tbody>
+            </table>
+          </div>
+          <div class="admin-pagination" id="userPagination" aria-label="Phân trang người dùng"></div>
+        </div>
+      </section>
+
+      <!-- ===== SECTION: ĐƠN BÁN MANG ĐI ===== -->
+      <section class="admin-section" id="section-orders">
+        <div class="section-header-row">
+          <h3 class="section-title">Quản lý đơn hàng</h3>
+        </div>
+        <!-- Thanh lọc đa điều kiện -->
+        <div class="filter-bar order-filter-bar">
+          <div class="order-filter-row">
+            <label class="order-filter-field">
+              <span>Mã đơn hàng / khách hàng</span>
+              <input type="text" id="orderSearchKeyword" class="filter-input" placeholder="Nhập mã hoặc tên khách hàng">
+            </label>
+            <label class="order-filter-field">
+              <span>Tình trạng đơn hàng</span>
+              <select id="orderStatusFilter" class="filter-select">
+                <option value="all">Tất cả tình trạng</option>
+                <option value="Chờ xác nhận">Chờ xác nhận</option>
+                <option value="Đã xác nhận">Đã xác nhận</option>
+                <option value="Đang giao">Đang giao</option>
+                <option value="Giao thành công">Giao thành công</option>
+                <option value="Huỷ đơn">Huỷ đơn</option>
+              </select>
+            </label>
+            <label class="date-filter-field" for="orderDateFrom">
+              <span>Từ ngày đặt hàng</span>
+              <input type="date" id="orderDateFrom" class="filter-input">
+            </label>
+            <label class="date-filter-field" for="orderDateTo">
+              <span>Đến ngày đặt hàng</span>
+              <input type="date" id="orderDateTo" class="filter-input">
+            </label>
+          </div>
+          <div class="order-filter-row order-filter-row-address">
+            <label class="order-filter-field order-filter-address">
+              <span>Địa điểm giao hàng</span>
+              <input type="text" id="orderAddressKeyword" class="filter-input" placeholder="Nhập địa chỉ giao hàng">
+            </label>
+            <label class="order-filter-field">
+              <span>Phường/Xã</span>
+              <select id="orderWardFilter" class="filter-select">
+                <option value="all">Tất cả phường/xã</option>
+              </select>
+            </label>
+            <label class="order-filter-field">
+              <span>Tỉnh/Thành phố</span>
+              <select id="orderCityFilter" class="filter-select">
+                <option value="all">Tất cả tỉnh/thành phố</option>
+              </select>
+            </label>
+            <div class="filter-actions">
+              <button type="button" class="abtn abtn-filter" id="applyOrderFilter">Lọc đơn hàng</button>
+              <button type="button" class="abtn abtn-reset" id="resetOrderFilter">Đặt lại</button>
+            </div>
+          </div>
+        </div>
+        <div class="admin-card">
+          <div class="admin-table-scroll">
+            <table class="admin-table" id="orderTable">
+              <thead>
+                <tr>
+                  <th>Mã đơn</th>
+                  <th>Ngày tạo</th>
+                  <th>Khách hàng</th>
+                  <th>Địa chỉ giao hàng</th>
+                  <th>Tổng tiền</th>
+                  <th>Trạng thái</th>
+                  <th>Thao tác</th>
+                </tr>
+              </thead>
+              <tbody id="orderTableBody"></tbody>
+            </table>
+          </div>
+          <p class="empty-hint" id="orderEmpty" hidden>Chưa có đơn hàng nào.</p>
+          <div class="admin-pagination" id="orderPagination" aria-label="Phân trang đơn hàng"></div>
+        </div>
+      </section>
+
+      <!-- ===== SECTION: THỐNG KÊ ===== -->
+      <section class="admin-section" id="section-stats">
+        <div class="filter-bar">
+          <label class="date-filter-field" for="statsDateFrom">
+            <span>Từ ngày</span>
+            <input type="date" id="statsDateFrom" class="filter-input">
+          </label>
+          <label class="date-filter-field" for="statsDateTo">
+            <span>Đến ngày</span>
+            <input type="date" id="statsDateTo" class="filter-input">
+          </label>
+          <div class="filter-actions">
+            <button class="abtn abtn-filter" id="applyStatsFilter">Lọc thống kê</button>
+            <button class="abtn abtn-reset" id="resetStatsFilter">Đặt lại</button>
+          </div>
+        </div>
+        <div class="admin-card">
+          <div class="admin-card-header">🏆 Top 5 khách hàng có mức mua hàng cao nhất</div>
+          <table class="admin-table" id="statsTopTable">
+            <thead>
+              <tr><th>#</th><th>Khách hàng</th><th>Số đơn</th><th>Tổng mua</th><th>Chi tiết</th></tr>
+            </thead>
+            <tbody id="statsTopBody"></tbody>
+          </table>
+          <p class="empty-hint" id="statsEmpty" hidden>Chưa có dữ liệu thống kê.</p>
+        </div>
+      </section>
+
+    </div><!-- /.admin-main -->
+  </div><!-- /.admin-dashboard -->
+
+  <!-- ===== MODAL: THÊM / SỬA SẢN PHẨM ===== -->
+  <div class="admin-modal-backdrop" id="productModalBackdrop" hidden>
+    <div class="admin-modal" id="productModal">
+      <div class="admin-modal-header">
+        <h3 id="productModalTitle">Thêm sản phẩm</h3>
+        <button class="admin-modal-close" data-close="productModalBackdrop">×</button>
+      </div>
+      <form id="productForm" class="admin-form" autocomplete="off">
+        <input type="hidden" id="productId">
+        <div class="form-row">
+          <label class="form-full">Tên món ăn
+            <input type="text" id="productName" placeholder="Nhập tên món ăn">
+          </label>
+        </div>
+        <div class="form-row">
+          <label>Phân loại
+            <select id="productCategory">
+              <option value="">-- Chọn phân loại --</option>
+              <option value="mon-chinh">Món chính</option>
+              <option value="khai-vi">Khai vị</option>
+              <option value="hai-san">Hải sản</option>
+              <option value="trang-mieng">Tráng miệng</option>
+              <option value="thuc-uong">Thức uống</option>
+            </select>
+          </label>
+          <label>Giá (đ)
+            <input type="text" id="productPrice" inputmode="numeric" placeholder="Nhập giá">
+          </label>
+          <label>Khẩu phần
+            <div class="product-serving-control">
+              <button type="button" id="productServingSubtract" aria-label="Giảm khẩu phần">−</button>
+              <input type="text" id="productServing" readonly>
+              <button type="button" id="productServingAdd" aria-label="Tăng khẩu phần">+</button>
+            </div>
+          </label>
+        </div>
+        <div class="form-row">
+          <label class="form-full">Mô tả ngắn
+            <textarea id="productDesc" rows="3" placeholder="Nhập mô tả món ăn..."></textarea>
+          </label>
+        </div>
+        <div class="form-row">
+          <label class="form-full">Mô tả chi tiết
+            <textarea id="productFullDescription" rows="4" placeholder="Bổ sung nội dung hiển thị trong phần xem chi tiết trên trang chủ..."></textarea>
+          </label>
+        </div>
+        <div class="form-row">
+          <label>Thành phần
+            <textarea id="productIngredients" rows="3" placeholder="Nguyên liệu chính..."></textarea>
+          </label>
+          <label>Hương vị
+            <textarea id="productFlavor" rows="3" placeholder="Ví dụ: Đậm đà · Thơm ngon..."></textarea>
+          </label>
+        </div>
+        <div class="form-row">
+          <label class="form-full">Cách chế biến
+            <textarea id="productPreparation" rows="3" placeholder="Mô tả cách chế biến món ăn..."></textarea>
+          </label>
+        </div>
+        <p class="product-detail-help" id="productDetailHelp">Thông tin chi tiết sẽ hiển thị trong mục “Xem chi tiết” trên trang chủ.</p>
+        <!-- Upload hình ảnh -->
+        <div class="form-row">
+          <label class="form-full">Hình ảnh
+            <div class="image-upload-area" id="imageUploadArea">
+              <div class="image-upload-placeholder" id="imageUploadPlaceholder">
+                <span>📷</span>
+                <span>Thêm hình ảnh sản phẩm</span>
+              </div>
+              <img id="productImagePreview" class="image-preview" src="" alt="Preview" hidden>
+              <button type="button" class="abtn abtn-outline abtn-sm" id="changeProductImageBtn" disabled>Sửa/Thay đổi ảnh</button>
+            </div>
+          </label>
+        </div>
+        <div class="admin-modal-footer">
+          <button type="button" class="abtn abtn-outline" data-close="productModalBackdrop">Huỷ</button>
+          <button type="submit" class="abtn abtn-primary" id="productSubmitBtn" formnovalidate>Lưu sản phẩm</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== MODAL: THÊM / SỬA NGƯỜI DÙNG ===== -->
+  <div class="admin-modal-backdrop" id="userModalBackdrop" hidden>
+    <div class="admin-modal" id="userModal">
+      <div class="admin-modal-header">
+        <h3 id="userModalTitle">Thêm người dùng</h3>
+        <button class="admin-modal-close" data-close="userModalBackdrop">×</button>
+      </div>
+      <form id="userForm" class="admin-form" autocomplete="off">
+        <input type="hidden" id="userIndex">
+        <div class="form-row">
+          <label>Họ và tên
+            <input type="text" id="userName" placeholder="Nguyễn Văn A">
+          </label>
+          <label>Email
+            <input type="text" id="userEmail" placeholder="email@example.com">
+          </label>
+        </div>
+        <div class="form-row">
+          <label>Số điện thoại
+            <input type="text" id="userPhone" placeholder="0901234567">
+          </label>
+        </div>
+        <div class="form-row">
+          <label class="form-full">Địa chỉ
+            <input type="text" id="userAddress" placeholder="Số nhà, đường, thành phố">
+          </label>
+        </div>
+        <div class="admin-modal-footer">
+          <button type="button" class="abtn abtn-outline" data-close="userModalBackdrop">Huỷ</button>
+          <button type="submit" class="abtn abtn-primary">Lưu người dùng</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== MODAL: XÁC NHẬN XÓA ===== -->
+  <div class="admin-modal-backdrop" id="deleteConfirmBackdrop" hidden>
+    <div class="admin-modal delete-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="deleteConfirmTitle">
+      <div class="admin-modal-header">
+        <h3 id="deleteConfirmTitle">Xác nhận xóa</h3>
+        <button class="admin-modal-close" type="button" data-close="deleteConfirmBackdrop" aria-label="Đóng">×</button>
+      </div>
+      <div class="delete-confirm-content">
+        <p id="deleteConfirmMessage"></p>
+      </div>
+      <div class="admin-modal-footer">
+        <button type="button" class="abtn abtn-outline" data-close="deleteConfirmBackdrop">Huỷ</button>
+        <button type="button" class="abtn abtn-danger" id="deleteConfirmAccept">Xóa</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MODAL: CHI TIẾT ĐƠN HÀNG KHÁCH (từ thống kê) ===== -->
+  <div class="admin-modal-backdrop" id="statsOrderBackdrop" hidden>
+    <div class="admin-modal" id="statsOrderModal">
+      <div class="admin-modal-header">
+        <h3 id="statsOrderTitle">Đơn hàng của khách</h3>
+        <button class="admin-modal-close" data-close="statsOrderBackdrop">×</button>
+      </div>
+      <div id="statsOrderContent" class="order-detail-content"></div>
+      <div class="admin-modal-footer">
+        <button type="button" class="abtn abtn-outline" data-close="statsOrderBackdrop">Đóng</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TOAST THÔNG BÁO ===== -->
+  <div id="adminToast" class="admin-toast" hidden></div>
+
+  <script src="admin.js"></script>
+</body>
+</html>
